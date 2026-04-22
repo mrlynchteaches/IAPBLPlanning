@@ -11,7 +11,7 @@
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
-  <div class="app-shell">
+  <div class="app-shell admin-mode" id="appShell">
     <header class="page-header">
       <div>
         <p class="eyebrow">Project-Based Learning Scheduling</p>
@@ -144,8 +144,11 @@
                 </select>
               </label>
               <label class="field compact-field">
-                <span>Month view</span>
-                <select id="monthFilter"></select>
+                <span>Display mode</span>
+                <select id="viewMode">
+                  <option value="admin">Admin planning</option>
+                  <option value="teacher">Teacher cross-curricular</option>
+                </select>
               </label>
             </div>
           </div>
@@ -167,7 +170,7 @@
         <section class="card overlap-card-large">
           <div class="card-header">
             <h2>Potential standards overlap</h2>
-            <p>Shows overlapping date ranges plus the likely shared content concepts. Expand a card to view the potential overlap details.</p>
+            <p>Use this section to check likely cross-curricular connections. Expand a card to review the shared concepts, timing, teachers, courses, and standards text.</p>
           </div>
           <div id="overlapList" class="stack-list overlap-stack"></div>
         </section>
