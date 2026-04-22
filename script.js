@@ -1,4 +1,4 @@
-const STORAGE_KEY = "pbl-semester-planner-v2";
+const STORAGE_KEY = "pbl-semester-planner-v3";
 
 const STOP_WORDS = new Set([
   "the", "and", "for", "with", "from", "into", "that", "this", "these", "those", "their", "there", "then",
@@ -17,67 +17,19 @@ const DEVALUED_VERBS = new Set([
   "justify", "trace", "classify", "examine", "ask", "answer", "research", "reflect", "organize"
 ]);
 
+const FIXED_GRADES = ["9", "10", "11", "12"];
+
 const SUBJECT_DEFINITIONS = [
-  {
-    key: "math",
-    label: "Math",
-    colorVar: "var(--subject-math)",
-    matches: ["algebra", "geometry", "calculus", "statistics", "stat", "math", "mathematics", "precalculus", "quantitative"]
-  },
-  {
-    key: "english",
-    label: "English / ELA",
-    colorVar: "var(--subject-english)",
-    matches: ["english", "ela", "language arts", "literature", "composition", "reading", "writing", "rhetoric"]
-  },
-  {
-    key: "science",
-    label: "Science",
-    colorVar: "var(--subject-science)",
-    matches: ["biology", "chemistry", "physics", "science", "environmental", "anatomy", "earth science", "geology", "astronomy"]
-  },
-  {
-    key: "social-studies",
-    label: "Social Studies",
-    colorVar: "var(--subject-social-studies)",
-    matches: ["history", "government", "economics", "civics", "social studies", "geography", "world history", "us history", "psychology", "sociology"]
-  },
-  {
-    key: "arts",
-    label: "Arts",
-    colorVar: "var(--subject-arts)",
-    matches: ["art", "music", "band", "chorus", "theatre", "theater", "drama", "dance", "visual art", "media arts"]
-  },
-  {
-    key: "world-language",
-    label: "World Language",
-    colorVar: "var(--subject-world-language)",
-    matches: ["spanish", "french", "latin", "german", "japanese", "chinese", "language", "esol", "ell"]
-  },
-  {
-    key: "cte",
-    label: "CTE / Career Pathways",
-    colorVar: "var(--subject-cte)",
-    matches: ["engineering", "business", "marketing", "computer", "technology", "robotics", "career", "pathway", "cte", "healthcare", "culinary", "agriculture"]
-  },
-  {
-    key: "pe-health",
-    label: "PE / Health",
-    colorVar: "var(--subject-pe-health)",
-    matches: ["health", "physical education", "pe", "wellness", "fitness", "sports medicine"]
-  },
-  {
-    key: "support-elective",
-    label: "Support / Elective",
-    colorVar: "var(--subject-support-elective)",
-    matches: ["advisory", "seminar", "homeroom", "support", "intervention", "study skills", "elective"]
-  },
-  {
-    key: "other",
-    label: "Other",
-    colorVar: "var(--subject-other)",
-    matches: []
-  }
+  { key: "math", label: "Math", colorVar: "var(--subject-math)", matches: ["algebra", "geometry", "calculus", "statistics", "stat", "math", "mathematics", "precalculus", "quantitative"] },
+  { key: "english", label: "English / ELA", colorVar: "var(--subject-english)", matches: ["english", "ela", "language arts", "literature", "composition", "reading", "writing", "rhetoric"] },
+  { key: "science", label: "Science", colorVar: "var(--subject-science)", matches: ["biology", "chemistry", "physics", "science", "environmental", "anatomy", "earth science", "geology", "astronomy"] },
+  { key: "social-studies", label: "Social Studies", colorVar: "var(--subject-social-studies)", matches: ["history", "government", "economics", "civics", "social studies", "geography", "world history", "us history", "psychology", "sociology"] },
+  { key: "arts", label: "Arts", colorVar: "var(--subject-arts)", matches: ["art", "music", "band", "chorus", "theatre", "theater", "drama", "dance", "visual art", "media arts"] },
+  { key: "world-language", label: "World Language", colorVar: "var(--subject-world-language)", matches: ["spanish", "french", "latin", "german", "japanese", "chinese", "language", "esol", "ell"] },
+  { key: "cte", label: "CTE / Career Pathways", colorVar: "var(--subject-cte)", matches: ["engineering", "business", "marketing", "computer", "technology", "robotics", "career", "pathway", "cte", "healthcare", "culinary", "agriculture"] },
+  { key: "pe-health", label: "PE / Health", colorVar: "var(--subject-pe-health)", matches: ["health", "physical education", "pe", "wellness", "fitness", "sports medicine"] },
+  { key: "support-elective", label: "Support / Elective", colorVar: "var(--subject-support-elective)", matches: ["advisory", "seminar", "homeroom", "support", "intervention", "study skills", "elective"] },
+  { key: "other", label: "Other", colorVar: "var(--subject-other)", matches: [] }
 ];
 
 const SAMPLE_ENTRIES = [
@@ -85,7 +37,7 @@ const SAMPLE_ENTRIES = [
     id: crypto.randomUUID(),
     teacher: "Ms. Alvarez",
     course: "Biology",
-    grade: "9",
+    grades: ["9"],
     standards: "ecosystems, biodiversity, populations, human impact, energy flow, matter cycles",
     title: "Restoring the School Habitat",
     startDate: "2026-08-17",
@@ -95,7 +47,7 @@ const SAMPLE_ENTRIES = [
     id: crypto.randomUUID(),
     teacher: "Mr. Grant",
     course: "English I",
-    grade: "9",
+    grades: ["9", "10"],
     standards: "argument, evidence, research, environment, community, audience, claims",
     title: "Community Climate Advocacy",
     startDate: "2026-09-01",
@@ -105,7 +57,7 @@ const SAMPLE_ENTRIES = [
     id: crypto.randomUUID(),
     teacher: "Dr. Kim",
     course: "World History",
-    grade: "10",
+    grades: ["10"],
     standards: "industrialization, migration, labor, technology, resources, economic systems",
     title: "Industrial Change and Human Cost",
     startDate: "2026-10-05",
@@ -118,6 +70,7 @@ const state = {
   entries: [],
   search: "",
   gradeFilter: "all",
+  monthFilter: "semester",
   editingId: null
 };
 
@@ -129,7 +82,6 @@ const els = {
   pblForm: document.getElementById("pblForm"),
   teacher: document.getElementById("teacher"),
   course: document.getElementById("course"),
-  grade: document.getElementById("grade"),
   title: document.getElementById("title"),
   startDate: document.getElementById("startDate"),
   endDate: document.getElementById("endDate"),
@@ -145,6 +97,7 @@ const els = {
   timelineDescription: document.getElementById("timelineDescription"),
   searchInput: document.getElementById("searchInput"),
   gradeFilter: document.getElementById("gradeFilter"),
+  monthFilter: document.getElementById("monthFilter"),
   subjectLegend: document.getElementById("subjectLegend"),
   monthHeader: document.getElementById("monthHeader"),
   timelineList: document.getElementById("timelineList"),
@@ -175,6 +128,10 @@ function bindEvents() {
   });
   els.gradeFilter.addEventListener("change", (event) => {
     state.gradeFilter = event.target.value;
+    render();
+  });
+  els.monthFilter.addEventListener("change", (event) => {
+    state.monthFilter = event.target.value;
     render();
   });
 }
@@ -211,34 +168,51 @@ function normalizeEntries(entries, year) {
 
 function sanitizeEntry(entry) {
   if (!entry) return null;
+  const grades = Array.isArray(entry.grades)
+    ? entry.grades.map(String)
+    : entry.grade
+      ? String(entry.grade).split(",").map((value) => value.trim())
+      : [];
+
+  const cleanGrades = [...new Set(grades.filter((grade) => FIXED_GRADES.includes(String(grade))))].sort((a, b) => Number(a) - Number(b));
+
   const clean = {
     id: entry.id || crypto.randomUUID(),
     teacher: String(entry.teacher || "").trim(),
     course: String(entry.course || "").trim(),
-    grade: String(entry.grade || "").trim(),
+    grades: cleanGrades,
     standards: String(entry.standards || "").trim(),
     title: String(entry.title || "").trim(),
     startDate: String(entry.startDate || "").trim(),
     endDate: String(entry.endDate || "").trim()
   };
 
-  if (!clean.teacher || !clean.course || !clean.grade || !clean.standards || !clean.title || !clean.startDate || !clean.endDate) {
+  if (!clean.teacher || !clean.course || clean.grades.length === 0 || !clean.standards || !clean.title || !clean.startDate || !clean.endDate) {
     return null;
   }
   return clean;
 }
 
 function persistState() {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify({
-    year: state.year,
-    entries: state.entries
-  }));
+  localStorage.setItem(STORAGE_KEY, JSON.stringify({ year: state.year, entries: state.entries }));
 }
 
 function setDefaultDates() {
   els.schoolYear.value = String(state.year);
   els.startDate.value = `${state.year}-08-03`;
   els.endDate.value = `${state.year}-08-21`;
+  setSelectedGrades([]);
+}
+
+function getSelectedGrades() {
+  return [...document.querySelectorAll('input[name="gradeLevels"]:checked')].map((input) => input.value).sort((a, b) => Number(a) - Number(b));
+}
+
+function setSelectedGrades(grades) {
+  const selected = new Set(grades || []);
+  document.querySelectorAll('input[name="gradeLevels"]').forEach((input) => {
+    input.checked = selected.has(input.value);
+  });
 }
 
 function handleYearChange() {
@@ -255,9 +229,7 @@ function handleYearChange() {
     }));
   }
 
-  if (!state.editingId) {
-    setDefaultDates();
-  }
+  if (!state.editingId) setDefaultDates();
 
   persistState();
   render();
@@ -270,7 +242,7 @@ function handleSubmit(event) {
     id: state.editingId || crypto.randomUUID(),
     teacher: els.teacher.value,
     course: els.course.value,
-    grade: els.grade.value,
+    grades: getSelectedGrades(),
     standards: els.standards.value,
     title: els.title.value,
     startDate: els.startDate.value,
@@ -278,18 +250,16 @@ function handleSubmit(event) {
   });
 
   if (!entry) {
-    alert("Please complete all fields before saving this PBL.");
+    alert("Please complete all fields and select at least one grade level before saving this PBL.");
     return;
   }
 
   const start = toDate(entry.startDate);
   const end = toDate(entry.endDate);
-
   if (Number.isNaN(start.getTime()) || Number.isNaN(end.getTime())) {
     alert("Please enter valid dates.");
     return;
   }
-
   if (end < start) {
     alert("End date must be on or after the start date.");
     return;
@@ -361,41 +331,58 @@ function importJSON(event) {
 }
 
 function render() {
-  const semesterStart = new Date(state.year, 7, 3, 12);
-  const semesterEnd = new Date(state.year, 11, 18, 12);
-  renderGradeFilterOptions();
+  const { viewStart, viewEnd, label } = getCurrentViewRange();
   const filteredEntries = getFilteredEntries();
   const activeEntries = filteredEntries
-    .filter((entry) => rangesOverlap(toDate(entry.startDate), toDate(entry.endDate), semesterStart, semesterEnd))
+    .filter((entry) => rangesOverlap(toDate(entry.startDate), toDate(entry.endDate), viewStart, viewEnd))
     .sort((a, b) => toDate(a.startDate) - toDate(b.startDate));
 
-  renderMetrics(activeEntries, semesterStart, semesterEnd);
-  renderTimelineDescription(semesterStart, semesterEnd);
+  renderMetrics(activeEntries, viewStart, viewEnd, label);
+  renderTimelineDescription(viewStart, viewEnd, label);
   renderLegend();
-  renderMonthHeader(semesterStart, semesterEnd);
-  renderTimeline(activeEntries, semesterStart, semesterEnd);
-  renderOverlaps(semesterStart, semesterEnd);
+  renderMonthHeader(viewStart, viewEnd);
+  renderTimeline(activeEntries, viewStart, viewEnd);
+  renderOverlaps(filteredEntries);
   renderEntries();
+}
+
+function getCurrentViewRange() {
+  if (state.monthFilter === "semester") {
+    const viewStart = new Date(state.year, 7, 3, 12);
+    const viewEnd = new Date(state.year, 11, 18, 12);
+    return { viewStart, viewEnd, label: "semester" };
+  }
+
+  const month = Number.parseInt(state.monthFilter, 10);
+  const start = new Date(state.year, month - 1, 1, 12);
+  const end = new Date(state.year, month, 0, 12);
+  const clampedStart = month === 8 ? new Date(state.year, 7, 3, 12) : start;
+  const clampedEnd = month === 12 ? new Date(state.year, 11, 18, 12) : end;
+  return { viewStart: clampedStart, viewEnd: clampedEnd, label: clampedStart.toLocaleDateString(undefined, { month: "long" }) };
 }
 
 function getFilteredEntries() {
   return state.entries.filter((entry) => {
-    const gradePass = state.gradeFilter === "all" || entry.grade === state.gradeFilter;
-    const searchPass = !state.search || [entry.teacher, entry.course, entry.grade, entry.title, entry.standards]
+    const searchPass = !state.search || [entry.teacher, entry.course, entry.title, entry.standards, formatGrades(entry.grades)]
       .join(" ")
       .toLowerCase()
       .includes(state.search);
-    return gradePass && searchPass;
+
+    let gradePass = true;
+    if (state.gradeFilter === "multiple") gradePass = entry.grades.length > 1;
+    else if (state.gradeFilter !== "all") gradePass = entry.grades.includes(state.gradeFilter);
+
+    return searchPass && gradePass;
   });
 }
 
-function renderMetrics(activeEntries, semesterStart, semesterEnd) {
-  const totalDays = dayDiff(semesterStart, semesterEnd) + 1;
+function renderMetrics(activeEntries, viewStart, viewEnd, label) {
+  const totalDays = dayDiff(viewStart, viewEnd) + 1;
   const scheduledDays = new Set();
 
   activeEntries.forEach((entry) => {
-    const start = new Date(Math.max(toDate(entry.startDate), semesterStart));
-    const end = new Date(Math.min(toDate(entry.endDate), semesterEnd));
+    const start = new Date(Math.max(toDate(entry.startDate), viewStart));
+    const end = new Date(Math.min(toDate(entry.endDate), viewEnd));
     for (let cursor = new Date(start); cursor <= end; cursor.setDate(cursor.getDate() + 1)) {
       scheduledDays.add(cursor.toISOString().slice(0, 10));
     }
@@ -404,25 +391,12 @@ function renderMetrics(activeEntries, semesterStart, semesterEnd) {
   els.metricTotal.textContent = String(state.entries.length);
   els.metricSemester.textContent = String(activeEntries.length);
   els.metricLoaded.textContent = String(scheduledDays.size);
-  els.metricIntensity.textContent = `Coverage intensity: ${Math.round((scheduledDays.size / totalDays) * 100) || 0}% of the Fall semester`;
+  els.metricIntensity.textContent = `Coverage intensity: ${Math.round((scheduledDays.size / totalDays) * 100) || 0}% of the current ${label}`;
 }
 
-function renderGradeFilterOptions() {
-  const previousValue = state.gradeFilter;
-  const grades = [...new Set(state.entries.map((entry) => entry.grade))].sort((a, b) => a.localeCompare(b, undefined, { numeric: true }));
-  els.gradeFilter.innerHTML = '<option value="all">All grades</option>';
-  grades.forEach((grade) => {
-    const option = document.createElement("option");
-    option.value = grade;
-    option.textContent = `Grade ${grade}`;
-    els.gradeFilter.append(option);
-  });
-  els.gradeFilter.value = grades.includes(previousValue) || previousValue === "all" ? previousValue : "all";
-  state.gradeFilter = els.gradeFilter.value;
-}
-
-function renderTimelineDescription(semesterStart, semesterEnd) {
-  els.timelineDescription.textContent = `Visualize when PBLs are running concurrently from ${formatDate(semesterStart)} to ${formatDate(semesterEnd)}.`;
+function renderTimelineDescription(viewStart, viewEnd, label) {
+  const prefix = label === "semester" ? "Visualize PBL timing across the full Fall semester" : `Month view: ${label}`;
+  els.timelineDescription.textContent = `${prefix} from ${formatDate(viewStart)} to ${formatDate(viewEnd)}.`;
 }
 
 function renderLegend() {
@@ -435,8 +409,8 @@ function renderLegend() {
   });
 }
 
-function renderMonthHeader(semesterStart, semesterEnd) {
-  const segments = monthSegments(semesterStart, semesterEnd);
+function renderMonthHeader(viewStart, viewEnd) {
+  const segments = monthSegments(viewStart, viewEnd);
   els.monthHeader.innerHTML = "";
   segments.forEach((segment) => {
     const cell = document.createElement("div");
@@ -447,7 +421,7 @@ function renderMonthHeader(semesterStart, semesterEnd) {
   });
 }
 
-function renderTimeline(entries, semesterStart, semesterEnd) {
+function renderTimeline(entries, viewStart, viewEnd) {
   els.timelineList.innerHTML = "";
 
   if (!entries.length) {
@@ -457,28 +431,26 @@ function renderTimeline(entries, semesterStart, semesterEnd) {
 
   entries.forEach((entry) => {
     const subject = inferSubject(entry.course);
+    const bar = barStyle(entry, viewStart, viewEnd);
     const row = document.createElement("article");
     row.className = "timeline-row";
-
-    const concepts = extractConcepts(entry.standards).slice(0, 5);
-    const bar = barStyle(entry, semesterStart, semesterEnd);
+    const concepts = extractConcepts(entry.standards).slice(0, 2);
 
     row.innerHTML = `
       <div class="timeline-meta">
-        <div class="entry-header">
-          <div>
-            <h3>${escapeHtml(entry.title)}</h3>
-            <p>${escapeHtml(entry.teacher)} • ${escapeHtml(entry.course)}</p>
-            <p class="meta-small">${formatDate(entry.startDate)} – ${formatDate(entry.endDate)} • Grade ${escapeHtml(entry.grade)}</p>
-          </div>
+        <h3>${escapeHtml(entry.title)}</h3>
+        <p>${escapeHtml(entry.course)} • ${escapeHtml(entry.teacher)}</p>
+        <div class="meta-line">
           <span class="subject-pill subject-${subject.key}">${subject.label}</span>
+          <span class="grade-pill">${escapeHtml(formatGrades(entry.grades))}</span>
         </div>
       </div>
       <div class="timeline-track">
-        <div class="track-grid">${Array.from({ length: 20 }, () => '<span></span>').join('')}</div>
+        <div class="track-grid">${Array.from({ length: 20 }, () => '<span></span>').join("")}</div>
         <div class="timeline-bar bar-${subject.key}" style="left:${bar.left}%; width:${bar.width}%;"></div>
-        <div class="bar-label">
-          ${concepts.map((concept) => `<span class="tag">${escapeHtml(concept)}</span>`).join("")}
+        <div class="track-footer">
+          <span class="tag">${formatDate(entry.startDate)} – ${formatDate(entry.endDate)}</span>
+          ${concepts.length ? `<span class="tag">Focus: ${escapeHtml(concepts.join(", "))}</span>` : ""}
         </div>
       </div>
     `;
@@ -487,21 +459,18 @@ function renderTimeline(entries, semesterStart, semesterEnd) {
   });
 }
 
-function renderOverlaps(semesterStart, semesterEnd) {
-  const visibleEntries = getFilteredEntries();
+function renderOverlaps(filteredEntries) {
   const overlaps = [];
 
-  for (let i = 0; i < visibleEntries.length; i += 1) {
-    for (let j = i + 1; j < visibleEntries.length; j += 1) {
-      const a = visibleEntries[i];
-      const b = visibleEntries[j];
+  for (let i = 0; i < filteredEntries.length; i += 1) {
+    for (let j = i + 1; j < filteredEntries.length; j += 1) {
+      const a = filteredEntries[i];
+      const b = filteredEntries[j];
       const timeOverlap = rangesOverlap(toDate(a.startDate), toDate(a.endDate), toDate(b.startDate), toDate(b.endDate));
       if (!timeOverlap) continue;
 
       const overlap = scoreOverlap(a, b);
-      if (overlap.shared.length > 0) {
-        overlaps.push({ a, b, ...overlap });
-      }
+      if (overlap.shared.length > 0) overlaps.push({ a, b, ...overlap });
     }
   }
 
@@ -514,18 +483,43 @@ function renderOverlaps(semesterStart, semesterEnd) {
   }
 
   overlaps.forEach((item) => {
+    const dateOverlap = getDateOverlapRange(item.a, item.b);
+    const sharedGrades = item.a.grades.filter((grade) => item.b.grades.includes(grade));
+
     const card = document.createElement("article");
-    card.className = "overlap-card";
+    card.className = "overlap-item";
     card.innerHTML = `
-      <div class="overlap-header">
+      <div class="overlap-summary">
         <div>
-          <h3>${item.label} overlap</h3>
-          <p><strong>${escapeHtml(item.a.title)}</strong> (${escapeHtml(item.a.course)}, ${escapeHtml(item.a.teacher)}) ↔ <strong>${escapeHtml(item.b.title)}</strong> (${escapeHtml(item.b.course)}, ${escapeHtml(item.b.teacher)})</p>
-          <p>${formatDate(item.a.startDate)} – ${formatDate(item.a.endDate)} and ${formatDate(item.b.startDate)} – ${formatDate(item.b.endDate)}</p>
+          <h3>${item.label} overlap • ${escapeHtml(item.a.title)} ↔ ${escapeHtml(item.b.title)}</h3>
+          <p>${escapeHtml(item.a.course)} (${escapeHtml(item.a.teacher)}) and ${escapeHtml(item.b.course)} (${escapeHtml(item.b.teacher)})</p>
+          <div class="overlap-badges">
+            <span class="badge badge-warning">${item.shared.length} shared concept${item.shared.length === 1 ? "" : "s"}</span>
+            <span class="tag">Time overlap: ${formatDate(dateOverlap.start)} – ${formatDate(dateOverlap.end)}</span>
+            ${sharedGrades.length ? `<span class="tag">Shared grades: ${escapeHtml(formatGrades(sharedGrades))}</span>` : `<span class="tag">Grades: ${escapeHtml(formatGrades(item.a.grades))} / ${escapeHtml(formatGrades(item.b.grades))}</span>`}
+          </div>
         </div>
-        <span class="badge badge-warning">${item.shared.length} shared concept${item.shared.length === 1 ? "" : "s"}</span>
       </div>
-      <div class="bar-label">${item.shared.map((concept) => `<span class="tag">${escapeHtml(concept)}</span>`).join("")}</div>
+      <details class="overlap-details">
+        <summary>View potential overlap details</summary>
+        <div class="overlap-concepts-box chip-row">
+          ${item.shared.map((concept) => `<span class="tag">${escapeHtml(concept)}</span>`).join("")}
+        </div>
+        <div class="overlap-detail-grid">
+          <div class="overlap-detail-box">
+            <h4>${escapeHtml(item.a.title)}</h4>
+            <p><strong>Teacher:</strong> ${escapeHtml(item.a.teacher)}</p>
+            <p><strong>Course:</strong> ${escapeHtml(item.a.course)}</p>
+            <p><strong>Standards:</strong> ${escapeHtml(item.a.standards)}</p>
+          </div>
+          <div class="overlap-detail-box">
+            <h4>${escapeHtml(item.b.title)}</h4>
+            <p><strong>Teacher:</strong> ${escapeHtml(item.b.teacher)}</p>
+            <p><strong>Course:</strong> ${escapeHtml(item.b.course)}</p>
+            <p><strong>Standards:</strong> ${escapeHtml(item.b.standards)}</p>
+          </div>
+        </div>
+      </details>
     `;
     els.overlapList.append(card);
   });
@@ -545,20 +539,28 @@ function renderEntries() {
     const article = document.createElement("article");
     article.className = "entry-card";
     article.innerHTML = `
-      <div class="entry-header">
+      <div class="entry-row">
         <div>
           <h3>${escapeHtml(entry.title)}</h3>
-          <p>${escapeHtml(entry.teacher)} • ${escapeHtml(entry.course)} • Grade ${escapeHtml(entry.grade)}</p>
-          <p>${formatDate(entry.startDate)} – ${formatDate(entry.endDate)}</p>
+          <div class="entry-subline">
+            <span>${escapeHtml(entry.teacher)}</span>
+            <span>•</span>
+            <span>${escapeHtml(entry.course)}</span>
+            <span>•</span>
+            <span>${escapeHtml(formatGrades(entry.grades))}</span>
+            <span>•</span>
+            <span>${formatDate(entry.startDate)} – ${formatDate(entry.endDate)}</span>
+          </div>
         </div>
-        <span class="subject-pill subject-${subject.key}">${subject.label}</span>
+        <div class="entry-actions-wrap">
+          <div class="chip-row"><span class="subject-pill subject-${subject.key}">${subject.label}</span></div>
+        </div>
       </div>
-      <p>${escapeHtml(entry.standards)}</p>
     `;
 
     const actionNode = els.entryActionsTemplate.content.cloneNode(true);
-    actionNode.querySelector(".edit-entry").addEventListener("click", () => startEditing(entry.id));
-    actionNode.querySelector(".delete-entry").addEventListener("click", () => deleteEntry(entry.id));
+    actionNode.querySelector('.edit-entry').addEventListener('click', () => startEditing(entry.id));
+    actionNode.querySelector('.delete-entry').addEventListener('click', () => deleteEntry(entry.id));
     article.append(actionNode);
     els.entryList.append(article);
   });
@@ -571,11 +573,11 @@ function startEditing(id) {
   state.editingId = id;
   els.teacher.value = entry.teacher;
   els.course.value = entry.course;
-  els.grade.value = entry.grade;
   els.title.value = entry.title;
   els.startDate.value = entry.startDate;
   els.endDate.value = entry.endDate;
   els.standards.value = entry.standards;
+  setSelectedGrades(entry.grades);
   els.submitBtn.textContent = "Save Changes";
   els.editBanner.classList.remove("hidden");
   window.scrollTo({ top: 0, behavior: "smooth" });
@@ -584,10 +586,7 @@ function startEditing(id) {
 function deleteEntry(id) {
   const entry = state.entries.find((item) => item.id === id);
   if (!entry) return;
-
-  const confirmDelete = window.confirm(`Delete "${entry.title}" from this browser?`);
-  if (!confirmDelete) return;
-
+  if (!window.confirm(`Delete "${entry.title}" from this browser?`)) return;
   state.entries = state.entries.filter((item) => item.id !== id);
   if (state.editingId === id) resetForm();
   persistState();
@@ -599,25 +598,35 @@ function inferSubject(courseText = "") {
   return SUBJECT_DEFINITIONS.find((subject) => subject.matches.some((term) => normalized.includes(term))) || SUBJECT_DEFINITIONS.at(-1);
 }
 
-function monthSegments(semesterStart, semesterEnd) {
+function getDateOverlapRange(a, b) {
+  return {
+    start: new Date(Math.max(toDate(a.startDate), toDate(b.startDate))),
+    end: new Date(Math.min(toDate(a.endDate), toDate(b.endDate)))
+  };
+}
+
+function formatGrades(grades) {
+  const list = [...new Set((grades || []).map(String))].sort((a, b) => Number(a) - Number(b));
+  if (!list.length) return "No grades";
+  if (list.length === 1) return `Grade ${list[0]}`;
+  return `Grades ${list.join(', ')}`;
+}
+
+function monthSegments(viewStart, viewEnd) {
   const segments = [];
-  let cursor = new Date(semesterStart);
+  let cursor = new Date(viewStart);
   cursor.setDate(1);
-
-  while (cursor <= semesterEnd) {
-    const start = new Date(Math.max(cursor, semesterStart));
+  while (cursor <= viewEnd) {
+    const start = new Date(Math.max(cursor, viewStart));
     const nextMonth = new Date(cursor.getFullYear(), cursor.getMonth() + 1, 1);
-    const end = new Date(Math.min(new Date(nextMonth - 1), semesterEnd));
-    const totalDays = dayDiff(semesterStart, semesterEnd) + 1;
-
+    const end = new Date(Math.min(new Date(nextMonth - 1), viewEnd));
+    const totalDays = dayDiff(viewStart, viewEnd) + 1;
     segments.push({
       label: cursor.toLocaleDateString(undefined, { month: "short" }),
       width: ((dayDiff(start, end) + 1) / totalDays) * 100
     });
-
     cursor = nextMonth;
   }
-
   return segments;
 }
 
@@ -626,11 +635,9 @@ function scoreOverlap(entryA, entryB) {
   const conceptsB = extractConcepts(entryB.standards);
   const shared = conceptsA.filter((concept) => conceptsB.includes(concept));
   const overlapRatio = shared.length / Math.max(1, Math.min(conceptsA.length, conceptsB.length));
-
   let label = "Low";
   if (shared.length >= 4 || overlapRatio >= 0.5) label = "High";
   else if (shared.length >= 2 || overlapRatio >= 0.25) label = "Medium";
-
   return { shared, label, score: overlapRatio };
 }
 
@@ -647,7 +654,6 @@ function extractConcepts(text) {
 
   const frequencies = new Map();
   tokens.forEach((token) => frequencies.set(token, (frequencies.get(token) || 0) + 1));
-
   return [...frequencies.entries()]
     .sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]))
     .map(([token]) => token)
@@ -655,12 +661,7 @@ function extractConcepts(text) {
 }
 
 function normalizeText(text = "") {
-  return text
-    .toLowerCase()
-    .replace(/[\u2018\u2019']/g, "")
-    .replace(/[^a-z0-9\s,-]/g, " ")
-    .replace(/\s+/g, " ")
-    .trim();
+  return text.toLowerCase().replace(/[\u2018\u2019']/g, "").replace(/[^a-z0-9\s,-]/g, " ").replace(/\s+/g, " ").trim();
 }
 
 function singularize(word) {
@@ -670,13 +671,13 @@ function singularize(word) {
   return word;
 }
 
-function barStyle(entry, semesterStart, semesterEnd) {
-  const totalDays = dayDiff(semesterStart, semesterEnd) + 1;
+function barStyle(entry, viewStart, viewEnd) {
+  const totalDays = dayDiff(viewStart, viewEnd) + 1;
   const start = toDate(entry.startDate);
   const end = toDate(entry.endDate);
-  const clampedStart = new Date(Math.max(start, semesterStart));
-  const clampedEnd = new Date(Math.min(end, semesterEnd));
-  const left = clamp((dayDiff(semesterStart, clampedStart) / totalDays) * 100, 0, 100);
+  const clampedStart = new Date(Math.max(start, viewStart));
+  const clampedEnd = new Date(Math.min(end, viewEnd));
+  const left = clamp((dayDiff(viewStart, clampedStart) / totalDays) * 100, 0, 100);
   const width = clamp(((dayDiff(clampedStart, clampedEnd) + 1) / totalDays) * 100, 1, 100);
   return { left, width };
 }
@@ -686,27 +687,14 @@ function formatDate(value) {
   return date.toLocaleDateString(undefined, { month: "short", day: "numeric" });
 }
 
-function toDate(value) {
-  return new Date(`${value}T12:00:00`);
-}
-
-function dayDiff(a, b) {
-  return Math.round((b - a) / (1000 * 60 * 60 * 24));
-}
-
-function rangesOverlap(aStart, aEnd, bStart, bEnd) {
-  return aStart <= bEnd && bStart <= aEnd;
-}
-
-function clamp(value, min, max) {
-  return Math.max(min, Math.min(max, value));
-}
-
+function toDate(value) { return new Date(`${value}T12:00:00`); }
+function dayDiff(a, b) { return Math.round((b - a) / (1000 * 60 * 60 * 24)); }
+function rangesOverlap(aStart, aEnd, bStart, bEnd) { return aStart <= bEnd && bStart <= aEnd; }
+function clamp(value, min, max) { return Math.max(min, Math.min(max, value)); }
 function shiftDateToYear(dateString, year) {
   const [_, month = '08', day = '03'] = String(dateString).match(/^(?:\d{4})-(\d{2})-(\d{2})$/) || [];
   return `${year}-${month}-${day}`;
 }
-
 function escapeHtml(value = "") {
   return String(value)
     .replaceAll("&", "&amp;")
