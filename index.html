@@ -45,11 +45,17 @@
               <span>Course</span>
               <input id="course" name="course" type="text" placeholder="e.g., Algebra I" required />
             </label>
-            <label class="field">
-              <span>Grade level</span>
-              <input id="grade" name="grade" type="text" placeholder="e.g., 9" required />
-            </label>
-            <label class="field">
+            <fieldset class="field field-full checkbox-fieldset">
+              <legend>Grade level(s)</legend>
+              <div class="checkbox-grid" id="gradeCheckboxes">
+                <label><input type="checkbox" name="gradeLevels" value="9" /> <span>Grade 9</span></label>
+                <label><input type="checkbox" name="gradeLevels" value="10" /> <span>Grade 10</span></label>
+                <label><input type="checkbox" name="gradeLevels" value="11" /> <span>Grade 11</span></label>
+                <label><input type="checkbox" name="gradeLevels" value="12" /> <span>Grade 12</span></label>
+              </div>
+              <small>Select one or more grade levels served by this PBL.</small>
+            </fieldset>
+            <label class="field field-full">
               <span>PBL title</span>
               <input id="title" name="title" type="text" placeholder="e.g., Designing a Tiny Home" required />
             </label>
@@ -86,13 +92,13 @@
           </article>
           <article class="card stat-card">
             <div>
-              <p class="stat-label">In Fall window</p>
+              <p class="stat-label">In current view</p>
               <p id="metricSemester" class="stat-value">0</p>
             </div>
           </article>
           <article class="card stat-card stat-wide">
             <div>
-              <p class="stat-label">Semester days with at least one active PBL</p>
+              <p class="stat-label">Days with at least one active PBL</p>
               <p id="metricLoaded" class="stat-value">0</p>
               <p id="metricIntensity" class="stat-footnote">Coverage intensity: 0%</p>
             </div>
@@ -101,10 +107,10 @@
       </aside>
 
       <section class="content-column">
-        <section class="card">
+        <section class="card timeline-card emphasis-card">
           <div class="card-header header-row">
             <div>
-              <h2>Fall semester timeline</h2>
+              <h2>Calendar overlap view</h2>
               <p id="timelineDescription">Visualize when PBLs are running concurrently from Aug 3 to Dec 18.</p>
             </div>
             <div class="toolbar">
@@ -113,9 +119,25 @@
                 <input id="searchInput" type="search" placeholder="Search teacher, course, title, standards..." />
               </label>
               <label class="field compact-field">
-                <span>Filter by grade</span>
+                <span>Grade filter</span>
                 <select id="gradeFilter">
                   <option value="all">All grades</option>
+                  <option value="9">Grade 9</option>
+                  <option value="10">Grade 10</option>
+                  <option value="11">Grade 11</option>
+                  <option value="12">Grade 12</option>
+                  <option value="multiple">Multiple grades</option>
+                </select>
+              </label>
+              <label class="field compact-field">
+                <span>View range</span>
+                <select id="monthFilter">
+                  <option value="semester">Full semester</option>
+                  <option value="8">August only</option>
+                  <option value="9">September only</option>
+                  <option value="10">October only</option>
+                  <option value="11">November only</option>
+                  <option value="12">December only</option>
                 </select>
               </label>
             </div>
@@ -131,24 +153,24 @@
 
           <div class="timeline-panel">
             <div id="monthHeader" class="month-header"></div>
-            <div id="timelineList" class="timeline-list"></div>
+            <div id="timelineList" class="timeline-list compact-timeline"></div>
           </div>
         </section>
 
-        <section class="card">
+        <section class="card overlap-card-large">
           <div class="card-header">
             <h2>Potential standards overlap</h2>
-            <p>This heuristic focuses on shared concept words in standards text and only flags likely overlap when date ranges also overlap.</p>
+            <p>Shows overlapping date ranges plus the likely shared content concepts. Expand a card to view the potential overlap details.</p>
           </div>
-          <div id="overlapList" class="stack-list"></div>
+          <div id="overlapList" class="stack-list overlap-stack"></div>
         </section>
 
-        <section class="card">
+        <section class="card compact-entries-card">
           <div class="card-header">
             <h2>Current PBL entries</h2>
-            <p>Use Edit to revise an entry. Delete removes it from local browser storage.</p>
+            <p>Compact list for quick review. Use Edit to revise an entry or Delete to remove it from local browser storage.</p>
           </div>
-          <div id="entryList" class="stack-list"></div>
+          <div id="entryList" class="stack-list compact-entry-list"></div>
         </section>
       </section>
     </main>
