@@ -17,10 +17,9 @@
   --subject-science: #0f766e;
   --subject-social-studies: #b45309;
   --subject-arts: #db2777;
-  --subject-world-language: #0891b2;
-  --subject-cte: #65a30d;
-  --subject-pe-health: #dc2626;
-  --subject-support-elective: #64748b;
+  --subject-it: #0f766e;
+  --subject-health-science: #dc2626;
+  --subject-engineering: #65a30d;
   --subject-other: #475569;
 }
 
@@ -111,20 +110,29 @@ h1 { margin: 0; font-size: clamp(2rem, 3vw, 3rem); line-height: 1.05; }
 .month-segment { display: flex; align-items: center; justify-content: center; border-right: 1px solid var(--border); font-size: .86rem; font-weight: 700; color: var(--text-soft); }
 .month-segment:last-child { border-right: none; }
 .timeline-list { display: flex; flex-direction: column; gap: 10px; margin-top: 12px; }
-.timeline-row { display: grid; grid-template-columns: 150px minmax(0, 1fr); gap: 12px; padding: 10px 12px; border: 1px solid var(--border); border-radius: 16px; background: #fff; }
+.timeline-row { display: grid; grid-template-columns: 158px minmax(0, 1fr); gap: 12px; padding: 10px 12px; border: 1px solid var(--border); border-radius: 16px; background: #fff; }
 .timeline-dates { display: flex; align-items: center; font-size: .9rem; font-weight: 700; color: var(--text-soft); }
-.timeline-track { position: relative; min-height: 52px; border-radius: 14px; background: linear-gradient(180deg, #f8fbff 0%, #f2f6fb 100%); overflow: hidden; }
+.timeline-track { position: relative; min-height: 56px; border-radius: 14px; background: linear-gradient(180deg, #f8fbff 0%, #f2f6fb 100%); overflow: hidden; }
 .track-grid { position: absolute; inset: 0; display: grid; grid-template-columns: repeat(24, minmax(0, 1fr)); }
 .track-grid span { border-right: 1px solid rgba(255,255,255,0.95); }
 .track-grid span:last-child { border-right: none; }
 .timeline-bar {
-  position: absolute; top: 11px; height: 30px; border-radius: 999px; box-shadow: 0 8px 18px rgba(15, 23, 42, 0.16);
+  position: absolute; top: 10px; height: 36px; border-radius: 999px; box-shadow: 0 8px 18px rgba(15, 23, 42, 0.16);
   display: flex; align-items: center; padding: 0 12px; overflow: hidden; min-width: 2px;
 }
 .bar-title {
-  color: #fff; font-weight: 700; font-size: .88rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; width: 100%;
+  color: #fff; font-weight: 700; font-size: .9rem; line-height: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; width: 100%;
 }
-.bar-title.hidden-title { opacity: 0; }
+.app-shell.admin-mode .timeline-row { padding: 8px 10px; }
+.app-shell.admin-mode .timeline-track { min-height: 50px; }
+.app-shell.admin-mode .timeline-bar { height: 32px; top: 9px; }
+.app-shell.admin-mode .bar-title { font-size: .86rem; }
+.app-shell.teacher-mode .timeline-row { grid-template-columns: 172px minmax(0, 1fr); }
+.app-shell.teacher-mode .timeline-track { min-height: 66px; }
+.app-shell.teacher-mode .timeline-bar { height: 42px; top: 12px; }
+.app-shell.teacher-mode .bar-title { font-size: .98rem; }
+.app-shell.teacher-mode .overlap-item { padding: 16px 18px; }
+.app-shell.teacher-mode .entry-card { padding: 12px 14px; }
 
 .stack-list { display: flex; flex-direction: column; gap: 12px; padding: 0 20px 20px; }
 .empty-state { border: 1px dashed #c8d5e5; border-radius: 16px; padding: 24px; color: var(--text-soft); background: linear-gradient(180deg, #fbfdff 0%, #f8fbff 100%); text-align: center; }
@@ -162,20 +170,18 @@ h1 { margin: 0; font-size: clamp(2rem, 3vw, 3rem); line-height: 1.05; }
 .subject-science { background: var(--subject-science); }
 .subject-social-studies { background: var(--subject-social-studies); }
 .subject-arts { background: var(--subject-arts); }
-.subject-world-language { background: var(--subject-world-language); }
-.subject-cte { background: var(--subject-cte); }
-.subject-pe-health { background: var(--subject-pe-health); }
-.subject-support-elective { background: var(--subject-support-elective); }
+.subject-it { background: var(--subject-it); }
+.subject-health-science { background: var(--subject-health-science); }
+.subject-engineering { background: var(--subject-engineering); }
 .subject-other { background: var(--subject-other); }
 .bar-math { background: var(--subject-math); }
 .bar-english { background: var(--subject-english); }
 .bar-science { background: var(--subject-science); }
 .bar-social-studies { background: var(--subject-social-studies); }
 .bar-arts { background: var(--subject-arts); }
-.bar-world-language { background: var(--subject-world-language); }
-.bar-cte { background: var(--subject-cte); }
-.bar-pe-health { background: var(--subject-pe-health); }
-.bar-support-elective { background: var(--subject-support-elective); }
+.bar-it { background: var(--subject-it); }
+.bar-health-science { background: var(--subject-health-science); }
+.bar-engineering { background: var(--subject-engineering); }
 .bar-other { background: var(--subject-other); }
 
 @media (max-width: 1160px) { .layout-grid { grid-template-columns: 1fr; } }
