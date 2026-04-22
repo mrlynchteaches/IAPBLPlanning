@@ -1,4 +1,4 @@
-const STORAGE_KEY = "pbl-semester-planner-v5";
+const STORAGE_KEY = "pbl-semester-planner-v6";
 
 const STOP_WORDS = new Set([
   "the", "and", "for", "with", "from", "into", "that", "this", "these", "those", "their", "there", "then",
@@ -488,12 +488,12 @@ function renderTimeline(entries, viewStart, viewEnd) {
     const bar = barStyle(entry, viewStart, viewEnd);
     const row = document.createElement('article');
     row.className = 'timeline-row';
+    const label = `${entry.title} • ${formatDate(entry.startDate)}–${formatDate(entry.endDate)}`;
     row.innerHTML = `
-      <div class="timeline-dates">${formatDate(entry.startDate)} – ${formatDate(entry.endDate)}</div>
       <div class="timeline-track">
         <div class="track-grid">${Array.from({ length: 24 }, () => '<span></span>').join('')}</div>
-        <div class="timeline-bar bar-${subject.key}" style="left:${bar.left}%; width:${bar.width}%;" title="${escapeHtml(entry.title)}">
-          <span class="bar-title">${escapeHtml(entry.title)}</span>
+        <div class="timeline-bar bar-${subject.key}" style="left:${bar.left}%; width:${bar.width}%;" title="${escapeHtml(label)}">
+          <span class="bar-title">${escapeHtml(label)}</span>
         </div>
       </div>
     `;
