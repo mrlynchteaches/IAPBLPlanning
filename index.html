@@ -1,188 +1,215 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="description" content="PBL Semester Planner for mapping project-based learning across the Fall semester." />
-  <title>PBL Semester Planner</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css" />
-</head>
-<body>
-  <div class="app-shell">
-    <header class="page-header">
-      <div>
-        <p class="eyebrow">Project-Based Learning Scheduling</p>
-        <h1>PBL Semester Planner</h1>
-        <p class="subhead">A static, GitHub Pages-ready planning tool for visualizing Fall-semester PBL timing, identifying concurrency, and surfacing likely content overlap in standards.</p>
-      </div>
-      <div class="header-actions">
-        <label class="field compact-field">
-          <span>Fall semester year</span>
-          <input id="schoolYear" type="number" min="2020" max="2100" step="1" />
-        </label>
-        <button id="exportBtn" class="btn btn-secondary" type="button">Export JSON</button>
-        <button id="importBtn" class="btn btn-secondary" type="button">Import JSON</button>
-        <input id="importFile" type="file" accept="application/json" hidden />
-      </div>
-    </header>
+:root {
+  --bg: #f3f6fb;
+  --surface: #ffffff;
+  --surface-muted: #f8fafc;
+  --text: #132033;
+  --text-soft: #546175;
+  --border: #d9e2ef;
+  --primary: #1f5eff;
+  --primary-dark: #1246cb;
+  --danger: #b42318;
+  --danger-bg: #fee4e2;
+  --shadow: 0 10px 30px rgba(15, 23, 42, 0.08);
+  --radius: 18px;
+  --radius-sm: 12px;
 
-    <main class="layout-grid">
-      <aside class="sidebar">
-        <section class="card">
-          <div class="card-header">
-            <h2>Add a PBL</h2>
-            <p>Data is stored in this browser for now. The code is structured so storage can be replaced with a backend later.</p>
-          </div>
-          <form id="pblForm" class="form-grid">
-            <label class="field">
-              <span>Teacher name</span>
-              <input id="teacher" name="teacher" type="text" placeholder="e.g., Ms. Johnson" required />
-            </label>
-            <label class="field">
-              <span>Course</span>
-              <input id="course" name="course" type="text" placeholder="e.g., Algebra I" required />
-            </label>
-            <fieldset class="field field-full checkbox-fieldset">
-              <legend>Grade level(s)</legend>
-              <div class="checkbox-grid" id="gradeCheckboxes">
-                <label><input type="checkbox" name="gradeLevels" value="9" /> <span>Grade 9</span></label>
-                <label><input type="checkbox" name="gradeLevels" value="10" /> <span>Grade 10</span></label>
-                <label><input type="checkbox" name="gradeLevels" value="11" /> <span>Grade 11</span></label>
-                <label><input type="checkbox" name="gradeLevels" value="12" /> <span>Grade 12</span></label>
-              </div>
-              <small>Select one or more grade levels served by this PBL.</small>
-            </fieldset>
-            <label class="field field-full">
-              <span>PBL title</span>
-              <input id="title" name="title" type="text" placeholder="e.g., Designing a Tiny Home" required />
-            </label>
-            <label class="field">
-              <span>Start date</span>
-              <input id="startDate" name="startDate" type="date" required />
-            </label>
-            <label class="field">
-              <span>End date</span>
-              <input id="endDate" name="endDate" type="date" required />
-            </label>
-            <label class="field field-full">
-              <span>Priority standards</span>
-              <textarea id="standards" name="standards" rows="5" placeholder="Paste standards or summarize the core concepts. Example: ecosystems, biodiversity, energy flow, human impact..." required></textarea>
-              <small>Overlap detection prioritizes likely concept words and de-emphasizes common skill verbs such as describe, explain, identify, create, and analyze.</small>
-            </label>
-            <div class="form-actions field-full">
-              <button id="submitBtn" class="btn" type="submit">Add PBL</button>
-              <button id="resetBtn" class="btn btn-secondary" type="button">Reset</button>
-              <button id="clearBtn" class="btn btn-danger" type="button">Clear All</button>
-            </div>
-            <div id="editBanner" class="edit-banner hidden field-full" aria-live="polite">
-              Editing an existing PBL. Save to update it, or click Reset to cancel editing.
-            </div>
-          </form>
-        </section>
+  --subject-math: #2563eb;
+  --subject-english: #9333ea;
+  --subject-science: #0f766e;
+  --subject-social-studies: #b45309;
+  --subject-arts: #db2777;
+  --subject-world-language: #0891b2;
+  --subject-cte: #65a30d;
+  --subject-pe-health: #dc2626;
+  --subject-support-elective: #64748b;
+  --subject-other: #475569;
+}
 
-        <section class="stats-grid">
-          <article class="card stat-card">
-            <div>
-              <p class="stat-label">Total PBLs</p>
-              <p id="metricTotal" class="stat-value">0</p>
-            </div>
-          </article>
-          <article class="card stat-card">
-            <div>
-              <p class="stat-label">In current view</p>
-              <p id="metricSemester" class="stat-value">0</p>
-            </div>
-          </article>
-          <article class="card stat-card stat-wide">
-            <div>
-              <p class="stat-label">Days with at least one active PBL</p>
-              <p id="metricLoaded" class="stat-value">0</p>
-              <p id="metricIntensity" class="stat-footnote">Coverage intensity: 0%</p>
-            </div>
-          </article>
-        </section>
-      </aside>
+* { box-sizing: border-box; }
+html { font-size: 16px; }
+body {
+  margin: 0;
+  min-height: 100vh;
+  background: linear-gradient(180deg, #eff4fb 0%, var(--bg) 100%);
+  color: var(--text);
+  font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+button, input, textarea, select { font: inherit; }
+button { cursor: pointer; }
 
-      <section class="content-column">
-        <section class="card timeline-card emphasis-card">
-          <div class="card-header header-row">
-            <div>
-              <h2>Calendar overlap view</h2>
-              <p id="timelineDescription">Visualize when PBLs are running concurrently from Aug 3 to Dec 18.</p>
-            </div>
-            <div class="toolbar">
-              <label class="search-field">
-                <span class="sr-only">Search</span>
-                <input id="searchInput" type="search" placeholder="Search teacher, course, title, standards..." />
-              </label>
-              <label class="field compact-field">
-                <span>Grade filter</span>
-                <select id="gradeFilter">
-                  <option value="all">All grades</option>
-                  <option value="9">Grade 9</option>
-                  <option value="10">Grade 10</option>
-                  <option value="11">Grade 11</option>
-                  <option value="12">Grade 12</option>
-                  <option value="multiple">Multiple grades</option>
-                </select>
-              </label>
-              <label class="field compact-field">
-                <span>View range</span>
-                <select id="monthFilter">
-                  <option value="semester">Full semester</option>
-                  <option value="8">August only</option>
-                  <option value="9">September only</option>
-                  <option value="10">October only</option>
-                  <option value="11">November only</option>
-                  <option value="12">December only</option>
-                </select>
-              </label>
-            </div>
-          </div>
+.app-shell { max-width: 1480px; margin: 0 auto; padding: 28px 18px 42px; }
+.page-header {
+  display: flex; align-items: flex-end; justify-content: space-between; gap: 24px; margin-bottom: 22px;
+}
+.eyebrow { margin: 0 0 8px; font-size: .82rem; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--primary); }
+h1 { margin: 0; font-size: clamp(2rem, 3vw, 3rem); line-height: 1.05; }
+.subhead { max-width: 74ch; margin: 10px 0 0; color: var(--text-soft); line-height: 1.6; }
+.header-actions { display: grid; grid-template-columns: repeat(4, auto); gap: 10px; align-items: end; }
 
-          <div class="legend-block">
-            <div>
-              <h3>Subject color legend</h3>
-              <p>Bars are color-coded by subject, derived from the course name.</p>
-            </div>
-            <div id="subjectLegend" class="legend-list"></div>
-          </div>
+.layout-grid { display: grid; grid-template-columns: minmax(320px, 380px) minmax(0, 1fr); gap: 22px; align-items: start; }
+.sidebar, .content-column { display: flex; flex-direction: column; gap: 22px; }
+.content-column { min-width: 0; }
 
-          <div class="timeline-panel">
-            <div id="monthHeader" class="month-header"></div>
-            <div id="timelineList" class="timeline-list compact-timeline"></div>
-          </div>
-        </section>
+.card {
+  background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); box-shadow: var(--shadow); overflow: hidden;
+}
+.emphasis-card { box-shadow: 0 16px 42px rgba(15, 23, 42, 0.12); }
+.card-header { padding: 20px 20px 0; }
+.card-header h2, .legend-block h3 { margin: 0; font-size: 1.18rem; }
+.card-header p, .legend-block p { margin: 8px 0 0; color: var(--text-soft); line-height: 1.5; }
 
-        <section class="card overlap-card-large">
-          <div class="card-header">
-            <h2>Potential standards overlap</h2>
-            <p>Shows overlapping date ranges plus the likely shared content concepts. Expand a card to view the potential overlap details.</p>
-          </div>
-          <div id="overlapList" class="stack-list overlap-stack"></div>
-        </section>
+.form-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; padding: 20px; }
+.field { display: flex; flex-direction: column; gap: 8px; }
+.field span, .compact-field span, .checkbox-fieldset legend { font-size: .9rem; font-weight: 600; }
+.field input, .field textarea, .field select, .search-field input, .compact-field input, .compact-field select {
+  width: 100%; border: 1px solid var(--border); background: #fff; border-radius: 12px; padding: 11px 13px; color: var(--text);
+  transition: border-color 160ms ease, box-shadow 160ms ease, transform 160ms ease;
+}
+.field input:focus, .field textarea:focus, .field select:focus, .search-field input:focus, .compact-field input:focus, .compact-field select:focus {
+  outline: none; border-color: rgba(31, 94, 255, 0.6); box-shadow: 0 0 0 4px rgba(31, 94, 255, 0.12);
+}
+.field textarea { resize: vertical; min-height: 124px; }
+.field small, .checkbox-fieldset small { color: var(--text-soft); line-height: 1.45; }
+.field-full { grid-column: 1 / -1; }
+.compact-field { min-width: 145px; }
+.checkbox-fieldset { border: 1px solid var(--border); border-radius: 14px; padding: 12px 14px 14px; margin: 0; }
+.checkbox-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px 14px; margin-top: 6px; }
+.checkbox-grid label { display: flex; align-items: center; gap: 8px; font-weight: 500; color: var(--text); }
+.checkbox-grid input { width: 16px; height: 16px; accent-color: var(--primary); }
+.form-actions { display: flex; flex-wrap: wrap; gap: 10px; }
 
-        <section class="card compact-entries-card">
-          <div class="card-header">
-            <h2>Current PBL entries</h2>
-            <p>Compact list for quick review. Use Edit to revise an entry or Delete to remove it from local browser storage.</p>
-          </div>
-          <div id="entryList" class="stack-list compact-entry-list"></div>
-        </section>
-      </section>
-    </main>
-  </div>
+.btn {
+  border: 1px solid transparent; border-radius: 12px; padding: 11px 15px; font-weight: 700; background: var(--primary); color: #fff;
+  transition: background 160ms ease, transform 160ms ease, box-shadow 160ms ease;
+}
+.btn:hover { background: var(--primary-dark); }
+.btn:active { transform: translateY(1px); }
+.btn-secondary { background: #fff; color: var(--text); border-color: var(--border); }
+.btn-secondary:hover { background: var(--surface-muted); border-color: #c7d3e4; }
+.btn-danger { background: #fff; color: var(--danger); border-color: #f0b8b3; }
+.btn-danger:hover { background: var(--danger-bg); }
+.btn-small { padding: 8px 11px; font-size: .88rem; }
+.edit-banner {
+  padding: 12px 14px; border-radius: 12px; background: rgba(31, 94, 255, 0.08); color: var(--primary-dark);
+  border: 1px solid rgba(31, 94, 255, 0.18); font-weight: 600;
+}
+.hidden { display: none !important; }
 
-  <template id="entryActionsTemplate">
-    <div class="entry-actions">
-      <button class="btn btn-secondary btn-small edit-entry" type="button">Edit</button>
-      <button class="btn btn-danger btn-small delete-entry" type="button">Delete</button>
-    </div>
-  </template>
+.stats-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
+.stat-wide { grid-column: 1 / -1; }
+.stat-card { padding: 18px; }
+.stat-label { margin: 0 0 8px; color: var(--text-soft); }
+.stat-value { margin: 0; font-size: 2rem; font-weight: 800; line-height: 1; }
+.stat-footnote { margin: 8px 0 0; color: var(--text-soft); }
 
-  <script src="script.js"></script>
-</body>
-</html>
+.header-row { display: flex; justify-content: space-between; align-items: flex-end; gap: 16px; }
+.toolbar { display: flex; gap: 10px; align-items: end; flex-wrap: wrap; }
+.search-field { min-width: min(320px, 100%); }
+.legend-block { display: flex; justify-content: space-between; gap: 16px; padding: 0 20px 14px; align-items: flex-end; flex-wrap: wrap; }
+.legend-list { display: flex; flex-wrap: wrap; gap: 8px; }
+.legend-item, .tag, .subject-pill, .grade-pill {
+  display: inline-flex; align-items: center; gap: 8px; border-radius: 999px; padding: 6px 11px; font-size: .82rem; font-weight: 600;
+}
+.legend-item { background: var(--surface-muted); border: 1px solid var(--border); }
+.legend-dot { width: 10px; height: 10px; border-radius: 50%; flex: 0 0 10px; }
+
+.timeline-panel { overflow-x: auto; padding: 0 20px 20px; }
+.month-header, .timeline-row { min-width: 1100px; }
+.month-header {
+  display: flex; height: 42px; overflow: hidden; border: 1px solid var(--border); border-radius: 14px; background: var(--surface-muted);
+}
+.month-segment {
+  display: flex; align-items: center; justify-content: center; border-right: 1px solid var(--border); font-size: .86rem; font-weight: 700; color: var(--text-soft);
+}
+.month-segment:last-child { border-right: none; }
+.timeline-list { display: flex; flex-direction: column; gap: 10px; margin-top: 12px; }
+.timeline-row {
+  display: grid; grid-template-columns: 220px minmax(0, 1fr); gap: 12px; padding: 12px; border: 1px solid var(--border); border-radius: 16px; background: #fff;
+}
+.timeline-meta { min-width: 0; }
+.timeline-meta h3 { margin: 0; font-size: .98rem; line-height: 1.25; }
+.timeline-meta p { margin: 4px 0 0; color: var(--text-soft); line-height: 1.35; }
+.timeline-meta .meta-small { font-size: .82rem; }
+.meta-line { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; margin-top: 6px; }
+.timeline-track {
+  position: relative; min-height: 66px; border-radius: 14px; background: linear-gradient(180deg, #f8fbff 0%, #f2f6fb 100%); overflow: hidden;
+}
+.track-grid { position: absolute; inset: 0; display: grid; grid-template-columns: repeat(20, minmax(0, 1fr)); }
+.track-grid span { border-right: 1px solid rgba(255,255,255,0.95); }
+.track-grid span:last-child { border-right: none; }
+.timeline-bar {
+  position: absolute; top: 14px; height: 18px; border-radius: 999px; box-shadow: 0 8px 18px rgba(15, 23, 42, 0.16);
+}
+.track-footer {
+  position: absolute; left: 10px; right: 10px; bottom: 10px; display: flex; justify-content: space-between; align-items: center; gap: 8px; flex-wrap: wrap;
+}
+.tag { background: rgba(255,255,255,.95); border: 1px solid var(--border); color: var(--text); }
+.grade-pill { background: #eef2ff; color: #334155; }
+.subject-pill { color: #fff; }
+
+.stack-list { display: flex; flex-direction: column; gap: 12px; padding: 0 20px 20px; }
+.empty-state {
+  border: 1px dashed #c8d5e5; border-radius: 16px; padding: 24px; color: var(--text-soft); background: linear-gradient(180deg, #fbfdff 0%, #f8fbff 100%); text-align: center;
+}
+
+.overlap-item, .entry-card { border: 1px solid var(--border); border-radius: 16px; background: #fff; }
+.overlap-item { padding: 14px 16px; background: linear-gradient(180deg, #fffaf0 0%, #fff7e6 100%); border-color: #f2d39c; }
+.overlap-summary { display: flex; justify-content: space-between; align-items: flex-start; gap: 14px; }
+.overlap-summary h3, .entry-card h3 { margin: 0; font-size: .98rem; }
+.overlap-summary p, .entry-card p { margin: 6px 0 0; color: var(--text-soft); line-height: 1.45; }
+.overlap-badges, .chip-row { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
+.badge { display: inline-flex; align-items: center; gap: 8px; border-radius: 999px; padding: 7px 11px; font-size: .84rem; font-weight: 700; }
+.badge-warning { background: #f59e0b; color: #fff; }
+
+.overlap-details { margin-top: 12px; border-top: 1px solid rgba(180,83,9,.18); padding-top: 12px; }
+.overlap-details summary {
+  cursor: pointer; font-weight: 700; color: #8a4b08; list-style: none;
+}
+.overlap-details summary::-webkit-details-marker { display: none; }
+.overlap-detail-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; margin-top: 10px; }
+.overlap-detail-box { background: rgba(255,255,255,.82); border: 1px solid rgba(180,83,9,.16); border-radius: 12px; padding: 10px 12px; }
+.overlap-detail-box h4 { margin: 0; font-size: .9rem; }
+.overlap-detail-box p { margin: 6px 0 0; color: var(--text-soft); font-size: .9rem; }
+.overlap-concepts-box { margin-top: 10px; }
+
+.compact-entry-list { gap: 8px; }
+.entry-card { padding: 10px 12px; }
+.entry-row { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 12px; align-items: start; }
+.entry-card h3 { font-size: .94rem; }
+.entry-card p { font-size: .88rem; }
+.entry-subline { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 4px; color: var(--text-soft); font-size: .84rem; }
+.entry-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+
+.subject-math { background: var(--subject-math); }
+.subject-english { background: var(--subject-english); }
+.subject-science { background: var(--subject-science); }
+.subject-social-studies { background: var(--subject-social-studies); }
+.subject-arts { background: var(--subject-arts); }
+.subject-world-language { background: var(--subject-world-language); }
+.subject-cte { background: var(--subject-cte); }
+.subject-pe-health { background: var(--subject-pe-health); }
+.subject-support-elective { background: var(--subject-support-elective); }
+.subject-other { background: var(--subject-other); }
+.bar-math { background: var(--subject-math); }
+.bar-english { background: var(--subject-english); }
+.bar-science { background: var(--subject-science); }
+.bar-social-studies { background: var(--subject-social-studies); }
+.bar-arts { background: var(--subject-arts); }
+.bar-world-language { background: var(--subject-world-language); }
+.bar-cte { background: var(--subject-cte); }
+.bar-pe-health { background: var(--subject-pe-health); }
+.bar-support-elective { background: var(--subject-support-elective); }
+.bar-other { background: var(--subject-other); }
+
+@media (max-width: 1160px) { .layout-grid { grid-template-columns: 1fr; } }
+@media (max-width: 860px) {
+  .page-header, .header-row { flex-direction: column; align-items: stretch; }
+  .header-actions { grid-template-columns: 1fr 1fr; }
+  .form-grid, .stats-grid, .checkbox-grid, .overlap-detail-grid { grid-template-columns: 1fr; }
+  .timeline-row, .entry-row { grid-template-columns: 1fr; }
+  .legend-block { flex-direction: column; align-items: stretch; }
+}
+@media (prefers-reduced-motion: reduce) { * { scroll-behavior: auto !important; transition: none !important; } }
+.sr-only {
+  position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); border: 0;
+}
