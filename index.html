@@ -29,144 +29,135 @@
       </div>
     </header>
 
-    <main class="layout-grid">
-      <aside class="sidebar">
-        <section class="card">
-          <div class="card-header">
+    <main class="page-stack">
+      <section class="card input-card">
+        <div class="card-header wide-header">
+          <div>
             <h2>Add a PBL</h2>
-            <p>Data is stored in this browser for now. The code is structured so storage can be replaced with a backend later.</p>
+            <p>Use this form to add or edit a PBL. The data is stored in this browser for now and can later be connected to a backend.</p>
           </div>
-          <form id="pblForm" class="form-grid">
-            <label class="field">
-              <span>Teacher name</span>
-              <input id="teacher" name="teacher" type="text" placeholder="e.g., Ms. Johnson" required />
-            </label>
-            <label class="field">
-              <span>Course</span>
-              <input id="course" name="course" type="text" placeholder="e.g., Algebra I" required />
-            </label>
-            <label class="field">
-              <span>Semester</span>
-              <select id="term" name="term" required>
+          <div class="top-controls">
+            <label class="field compact-field">
+              <span>Semester view</span>
+              <select id="termFilter">
                 <option value="fall">Fall</option>
                 <option value="spring">Spring</option>
               </select>
             </label>
-            <fieldset class="field field-full checkbox-fieldset">
-              <legend>Grade level(s)</legend>
-              <div class="checkbox-grid" id="gradeCheckboxes">
-                <label><input type="checkbox" name="gradeLevels" value="9" /> <span>Grade 9</span></label>
-                <label><input type="checkbox" name="gradeLevels" value="10" /> <span>Grade 10</span></label>
-                <label><input type="checkbox" name="gradeLevels" value="11" /> <span>Grade 11</span></label>
-                <label><input type="checkbox" name="gradeLevels" value="12" /> <span>Grade 12</span></label>
-              </div>
-              <small>Select one or more grade levels served by this PBL.</small>
-            </fieldset>
-            <label class="field field-full">
-              <span>PBL title</span>
-              <input id="title" name="title" type="text" placeholder="e.g., Designing a Tiny Home" required />
+            <label class="field compact-field">
+              <span>Grade filter</span>
+              <select id="gradeFilter">
+                <option value="all">All grades</option>
+                <option value="9">Grade 9</option>
+                <option value="10">Grade 10</option>
+                <option value="11">Grade 11</option>
+                <option value="12">Grade 12</option>
+                <option value="multiple">Multiple grades</option>
+              </select>
             </label>
-            <label class="field">
-              <span>Start date</span>
-              <input id="startDate" name="startDate" type="date" required />
+            <label class="field compact-field">
+              <span>Display mode</span>
+              <select id="viewMode">
+                <option value="admin">Admin planning</option>
+                <option value="teacher">Teacher cross-curricular</option>
+              </select>
             </label>
-            <label class="field">
-              <span>End date</span>
-              <input id="endDate" name="endDate" type="date" required />
+            <label class="search-field inline-search">
+              <span class="sr-only">Search</span>
+              <input id="searchInput" type="search" placeholder="Search teacher, course, title, standards..." />
             </label>
-            <label class="field field-full">
-              <span>Priority standards</span>
-              <textarea id="standards" name="standards" rows="5" placeholder="Paste standards or summarize the core concepts. Example: ecosystems, biodiversity, energy flow, human impact..." required></textarea>
-              <small>Overlap detection prioritizes likely concept words and de-emphasizes common skill verbs such as describe, explain, identify, create, and analyze.</small>
-            </label>
-            <div class="form-actions field-full">
-              <button id="submitBtn" class="btn" type="submit">Add PBL</button>
-              <button id="resetBtn" class="btn btn-secondary" type="button">Reset</button>
-              <button id="clearBtn" class="btn btn-danger" type="button">Clear All</button>
+          </div>
+        </div>
+        <form id="pblForm" class="form-grid wide-form">
+          <label class="field">
+            <span>Teacher name</span>
+            <input id="teacher" name="teacher" type="text" placeholder="e.g., Ms. Johnson" required />
+          </label>
+          <label class="field">
+            <span>Course</span>
+            <input id="course" name="course" type="text" placeholder="e.g., Algebra I" required />
+          </label>
+          <label class="field">
+            <span>Semester</span>
+            <select id="term" name="term" required>
+              <option value="fall">Fall</option>
+              <option value="spring">Spring</option>
+            </select>
+          </label>
+          <label class="field">
+            <span>PBL title</span>
+            <input id="title" name="title" type="text" placeholder="e.g., Designing a Tiny Home" required />
+          </label>
+          <label class="field">
+            <span>Start date</span>
+            <input id="startDate" name="startDate" type="date" required />
+          </label>
+          <label class="field">
+            <span>End date</span>
+            <input id="endDate" name="endDate" type="date" required />
+          </label>
+          <fieldset class="field checkbox-fieldset grades-fieldset">
+            <legend>Grade level(s)</legend>
+            <div class="checkbox-grid" id="gradeCheckboxes">
+              <label><input type="checkbox" name="gradeLevels" value="9" /> <span>Grade 9</span></label>
+              <label><input type="checkbox" name="gradeLevels" value="10" /> <span>Grade 10</span></label>
+              <label><input type="checkbox" name="gradeLevels" value="11" /> <span>Grade 11</span></label>
+              <label><input type="checkbox" name="gradeLevels" value="12" /> <span>Grade 12</span></label>
             </div>
-            <div id="editBanner" class="edit-banner hidden field-full" aria-live="polite">
-              Editing an existing PBL. Save to update it, or click Reset to cancel editing.
-            </div>
-          </form>
-        </section>
+            <small>Select one or more grade levels served by this PBL.</small>
+          </fieldset>
+          <label class="field standards-field">
+            <span>Priority standards</span>
+            <textarea id="standards" name="standards" rows="4" placeholder="Paste standards or summarize the core concepts. Example: ecosystems, biodiversity, energy flow, human impact..." required></textarea>
+            <small>Overlap detection prioritizes likely concept words and de-emphasizes common skill verbs such as describe, explain, identify, create, and analyze.</small>
+          </label>
+          <div class="form-actions form-actions-wide">
+            <button id="submitBtn" class="btn" type="submit">Add PBL</button>
+            <button id="resetBtn" class="btn btn-secondary" type="button">Reset</button>
+            <button id="clearBtn" class="btn btn-danger" type="button">Clear All</button>
+          </div>
+          <div id="editBanner" class="edit-banner hidden">
+            Editing an existing PBL. Save to update it, or click Reset to cancel editing.
+          </div>
+        </form>
+      </section>
 
-        <section class="stats-grid">
-          <article class="card stat-card">
-            <div>
-              <p class="stat-label">Total PBLs</p>
-              <p id="metricTotal" class="stat-value">0</p>
+      <section class="card calendar-card emphasis-card">
+        <div class="card-header wide-header">
+          <div>
+            <h2>Calendar overlap view</h2>
+            <p id="timelineDescription">Visualize PBL implementation timing for the selected semester.</p>
+          </div>
+          <div class="mini-stats">
+            <div class="mini-stat">
+              <span>Total PBLs</span>
+              <strong id="metricTotal">0</strong>
             </div>
-          </article>
-          <article class="card stat-card">
-            <div>
-              <p class="stat-label">In current view</p>
-              <p id="metricSemester" class="stat-value">0</p>
+            <div class="mini-stat">
+              <span>In current view</span>
+              <strong id="metricSemester">0</strong>
             </div>
-          </article>
-          <article class="card stat-card stat-wide">
-            <div>
-              <p class="stat-label">Days with at least one active PBL</p>
-              <p id="metricLoaded" class="stat-value">0</p>
-              <p id="metricIntensity" class="stat-footnote">Coverage intensity: 0%</p>
-            </div>
-          </article>
-        </section>
-      </aside>
-
-      <section class="content-column">
-        <section class="card emphasis-card timeline-card">
-          <div class="card-header header-row">
-            <div>
-              <h2>Calendar overlap view</h2>
-              <p id="timelineDescription">Visualize PBL implementation timing for the selected semester.</p>
-            </div>
-            <div class="toolbar">
-              <label class="search-field">
-                <span class="sr-only">Search</span>
-                <input id="searchInput" type="search" placeholder="Search teacher, course, title, standards..." />
-              </label>
-              <label class="field compact-field">
-                <span>Semester view</span>
-                <select id="termFilter">
-                  <option value="fall">Fall</option>
-                  <option value="spring">Spring</option>
-                </select>
-              </label>
-              <label class="field compact-field">
-                <span>Grade filter</span>
-                <select id="gradeFilter">
-                  <option value="all">All grades</option>
-                  <option value="9">Grade 9</option>
-                  <option value="10">Grade 10</option>
-                  <option value="11">Grade 11</option>
-                  <option value="12">Grade 12</option>
-                  <option value="multiple">Multiple grades</option>
-                </select>
-              </label>
-              <label class="field compact-field">
-                <span>Display mode</span>
-                <select id="viewMode">
-                  <option value="admin">Admin planning</option>
-                  <option value="teacher">Teacher cross-curricular</option>
-                </select>
-              </label>
+            <div class="mini-stat wide-mini-stat">
+              <span>Days with at least one active PBL</span>
+              <strong id="metricLoaded">0</strong>
+              <small id="metricIntensity">Coverage intensity: 0%</small>
             </div>
           </div>
-
-          <div class="legend-block">
-            <div>
-              <h3>Subject color legend</h3>
-              <p>Bars are color-coded by subject, derived from the course name.</p>
-            </div>
-            <div id="subjectLegend" class="legend-list"></div>
+        </div>
+        <div class="legend-block">
+          <div>
+            <h3>Subject color legend</h3>
+            <p>Bars are color-coded by subject, derived from the course name.</p>
           </div>
+          <div id="subjectLegend" class="legend-list"></div>
+        </div>
+        <div class="timeline-panel no-scroll-x">
+          <div id="monthHeader" class="month-header"></div>
+          <div id="timelineList" class="timeline-list full-width-timeline"></div>
+        </div>
+      </section>
 
-          <div class="timeline-panel">
-            <div id="monthHeader" class="month-header"></div>
-            <div id="timelineList" class="timeline-list"></div>
-          </div>
-        </section>
-
+      <section class="secondary-grid">
         <section class="card overlap-card-large">
           <div class="card-header">
             <h2>Potential standards overlap</h2>
