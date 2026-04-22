@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="PBL Semester Planner for mapping project-based learning across the Fall semester." />
+  <title>PBL Semester Planner</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="app-shell">
+    <header class="page-header">
+      <div>
+        <p class="eyebrow">Project-Based Learning Scheduling</p>
+        <h1>PBL Semester Planner</h1>
+        <p class="subhead">A static, GitHub Pages-ready planning tool for visualizing Fall-semester PBL timing, identifying concurrency, and surfacing likely content overlap in standards.</p>
+      </div>
+      <div class="header-actions">
+        <label class="field compact-field">
+          <span>Fall semester year</span>
+          <input id="schoolYear" type="number" min="2020" max="2100" step="1" />
+        </label>
+        <button id="exportBtn" class="btn btn-secondary" type="button">Export JSON</button>
+        <button id="importBtn" class="btn btn-secondary" type="button">Import JSON</button>
+        <input id="importFile" type="file" accept="application/json" hidden />
+      </div>
+    </header>
+
+    <main class="layout-grid">
+      <aside class="sidebar">
+        <section class="card">
+          <div class="card-header">
+            <h2>Add a PBL</h2>
+            <p>Data is stored in this browser for now. The code is structured so storage can be replaced with a backend later.</p>
+          </div>
+          <form id="pblForm" class="form-grid">
+            <label class="field">
+              <span>Teacher name</span>
+              <input id="teacher" name="teacher" type="text" placeholder="e.g., Ms. Johnson" required />
+            </label>
+            <label class="field">
+              <span>Course</span>
+              <input id="course" name="course" type="text" placeholder="e.g., Algebra I" required />
+            </label>
+            <label class="field">
+              <span>Grade level</span>
+              <input id="grade" name="grade" type="text" placeholder="e.g., 9" required />
+            </label>
+            <label class="field">
+              <span>PBL title</span>
+              <input id="title" name="title" type="text" placeholder="e.g., Designing a Tiny Home" required />
+            </label>
+            <label class="field">
+              <span>Start date</span>
+              <input id="startDate" name="startDate" type="date" required />
+            </label>
+            <label class="field">
+              <span>End date</span>
+              <input id="endDate" name="endDate" type="date" required />
+            </label>
+            <label class="field field-full">
+              <span>Priority standards</span>
+              <textarea id="standards" name="standards" rows="5" placeholder="Paste standards or summarize the core concepts. Example: ecosystems, biodiversity, energy flow, human impact..." required></textarea>
+              <small>Overlap detection prioritizes likely concept words and de-emphasizes common skill verbs such as describe, explain, identify, create, and analyze.</small>
+            </label>
+            <div class="form-actions field-full">
+              <button id="submitBtn" class="btn" type="submit">Add PBL</button>
+              <button id="resetBtn" class="btn btn-secondary" type="button">Reset</button>
+              <button id="clearBtn" class="btn btn-danger" type="button">Clear All</button>
+            </div>
+            <div id="editBanner" class="edit-banner hidden field-full" aria-live="polite">
+              Editing an existing PBL. Save to update it, or click Reset to cancel editing.
+            </div>
+          </form>
+        </section>
+
+        <section class="stats-grid">
+          <article class="card stat-card">
+            <div>
+              <p class="stat-label">Total PBLs</p>
+              <p id="metricTotal" class="stat-value">0</p>
+            </div>
+          </article>
+          <article class="card stat-card">
+            <div>
+              <p class="stat-label">In Fall window</p>
+              <p id="metricSemester" class="stat-value">0</p>
+            </div>
+          </article>
+          <article class="card stat-card stat-wide">
+            <div>
+              <p class="stat-label">Semester days with at least one active PBL</p>
+              <p id="metricLoaded" class="stat-value">0</p>
+              <p id="metricIntensity" class="stat-footnote">Coverage intensity: 0%</p>
+            </div>
+          </article>
+        </section>
+      </aside>
+
+      <section class="content-column">
+        <section class="card">
+          <div class="card-header header-row">
+            <div>
+              <h2>Fall semester timeline</h2>
+              <p id="timelineDescription">Visualize when PBLs are running concurrently from Aug 3 to Dec 18.</p>
+            </div>
+            <div class="toolbar">
+              <label class="search-field">
+                <span class="sr-only">Search</span>
+                <input id="searchInput" type="search" placeholder="Search teacher, course, title, standards..." />
+              </label>
+              <label class="field compact-field">
+                <span>Filter by grade</span>
+                <select id="gradeFilter">
+                  <option value="all">All grades</option>
+                </select>
+              </label>
+            </div>
+          </div>
+
+          <div class="legend-block">
+            <div>
+              <h3>Subject color legend</h3>
+              <p>Bars are color-coded by subject, derived from the course name.</p>
+            </div>
+            <div id="subjectLegend" class="legend-list"></div>
+          </div>
+
+          <div class="timeline-panel">
+            <div id="monthHeader" class="month-header"></div>
+            <div id="timelineList" class="timeline-list"></div>
+          </div>
+        </section>
+
+        <section class="card">
+          <div class="card-header">
+            <h2>Potential standards overlap</h2>
+            <p>This heuristic focuses on shared concept words in standards text and only flags likely overlap when date ranges also overlap.</p>
+          </div>
+          <div id="overlapList" class="stack-list"></div>
+        </section>
+
+        <section class="card">
+          <div class="card-header">
+            <h2>Current PBL entries</h2>
+            <p>Use Edit to revise an entry. Delete removes it from local browser storage.</p>
+          </div>
+          <div id="entryList" class="stack-list"></div>
+        </section>
+      </section>
+    </main>
+  </div>
+
+  <template id="entryActionsTemplate">
+    <div class="entry-actions">
+      <button class="btn btn-secondary btn-small edit-entry" type="button">Edit</button>
+      <button class="btn btn-danger btn-small delete-entry" type="button">Delete</button>
+    </div>
+  </template>
+
+  <script src="script.js"></script>
+</body>
+</html>
