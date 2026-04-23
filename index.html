@@ -31,41 +31,10 @@
 
     <main class="page-stack">
       <section class="card input-card">
-        <div class="card-header wide-header">
+        <div class="card-header input-header-simple">
           <div>
             <h2>Add a PBL</h2>
             <p>Use this form to add or edit a PBL. The data is stored in this browser for now and can later be connected to a backend.</p>
-          </div>
-          <div class="top-controls">
-            <label class="field compact-field">
-              <span>Semester view</span>
-              <select id="termFilter">
-                <option value="fall">Fall</option>
-                <option value="spring">Spring</option>
-              </select>
-            </label>
-            <label class="field compact-field">
-              <span>Grade filter</span>
-              <select id="gradeFilter">
-                <option value="all">All grades</option>
-                <option value="9">Grade 9</option>
-                <option value="10">Grade 10</option>
-                <option value="11">Grade 11</option>
-                <option value="12">Grade 12</option>
-                <option value="multiple">Multiple grades</option>
-              </select>
-            </label>
-            <label class="field compact-field">
-              <span>Display mode</span>
-              <select id="viewMode">
-                <option value="admin">Admin planning</option>
-                <option value="teacher">Teacher cross-curricular</option>
-              </select>
-            </label>
-            <label class="search-field inline-search">
-              <span class="sr-only">Search</span>
-              <input id="searchInput" type="search" placeholder="Search teacher, course, title, standards..." />
-            </label>
           </div>
         </div>
         <form id="pblForm" class="form-grid wide-form">
@@ -123,10 +92,43 @@
       </section>
 
       <section class="card calendar-card emphasis-card">
-        <div class="card-header wide-header">
-          <div>
-            <h2>Calendar overlap view</h2>
-            <p id="timelineDescription">Visualize PBL implementation timing for the selected semester.</p>
+        <div class="card-header wide-header calendar-header-stack">
+          <div class="calendar-header-main">
+            <div>
+              <h2>Calendar overlap view</h2>
+              <p id="timelineDescription">Visualize PBL implementation timing for the selected semester.</p>
+            </div>
+            <div class="top-controls calendar-controls">
+              <label class="field compact-field">
+                <span>Semester view</span>
+                <select id="termFilter">
+                  <option value="fall">Fall</option>
+                  <option value="spring">Spring</option>
+                </select>
+              </label>
+              <label class="field compact-field">
+                <span>Grade filter</span>
+                <select id="gradeFilter">
+                  <option value="all">All grades</option>
+                  <option value="9">Grade 9</option>
+                  <option value="10">Grade 10</option>
+                  <option value="11">Grade 11</option>
+                  <option value="12">Grade 12</option>
+                  <option value="multiple">Multiple grades</option>
+                </select>
+              </label>
+              <label class="field compact-field">
+                <span>Display mode</span>
+                <select id="viewMode">
+                  <option value="admin">Admin planning</option>
+                  <option value="teacher">Teacher cross-curricular</option>
+                </select>
+              </label>
+              <label class="search-field inline-search">
+                <span class="sr-only">Search</span>
+                <input id="searchInput" type="search" placeholder="Search teacher, course, title, standards..." />
+              </label>
+            </div>
           </div>
           <div class="mini-stats">
             <div class="mini-stat">
